@@ -19,13 +19,27 @@ class CloudwatchAgentStack(Stack):
 
         ssm.CfnAssociation(
             self,
+            'InstallCwAgent',
+            name='AWS-ConfigureAWSPackage',
+            parameters={
+                'action': ['Install'],
+                'name': ['AmazonCloudWatchAgent'],
+            },
+            targets=[{
+                'key': 'tag:CwAgent',
+                'values': ['enabled'],
+            }],
+        )
+
+        ssm.CfnAssociation(
+            self,
             'ConfigureCwAgent',
             name='AmazonCloudWatch-ManageAgent',
             parameters={
                 'action': ['configure'],
                 'mode': ['ec2'],
                 'optionalConfigurationSource': ['ssm'],
-                'optionalConfigurationLocation': ['parameter_name:/cwagent/ec2/app/config'],
+                'optionalConfigurationLocation': ['/cwagent/ec2/app/config'],
                 'optionalRestart': ['yes'],
             },
             targets=[{
