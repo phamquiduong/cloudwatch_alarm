@@ -1,12 +1,14 @@
 import aws_cdk as cdk
-from dotenv import load_dotenv
+import yaml
 
+from cloudwatch_alarm.cloudwatch_agent_stack import CloudwatchAgentStack
 from cloudwatch_alarm.cloudwatch_alarm_stack import CloudwatchAlarmStack
 
-if not load_dotenv():
-    raise FileNotFoundError('.env file not found')
+with open('config.yaml', 'r', encoding='utf-8') as f:
+    config = yaml.safe_load(f)
 
 app = cdk.App()
-CloudwatchAlarmStack(app, "CloudwatchAlarmStack")
+CloudwatchAgentStack(app, 'CloudwatchAgentStack')
+CloudwatchAlarmStack(app, 'CloudwatchAlarmStack', configs=config['ec2'])
 
 app.synth()
